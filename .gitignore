@@ -1,0 +1,49 @@
+# Ignore C++ object and binary files
+*.o
+*.out
+*.a
+*.so
+*.exe
+
+# Ignore Rust target directory
+**/target/
+**/Cargo.lock
+
+# Ignore compiled libraries
+*.lib
+*.dll
+*.dylib
+
+# Ignore Rust incremental compilation files
+**/incremental/
+
+# Ignore Rust build artifacts and cache files
+*.rmeta
+*.rlib
+*.d
+
+# Ignore build directories
+build/
+dist/
+bin/
+obj/
+
+# Ignore system or editor specific files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+
+# Ignore log files and temporary files
+*.log
+*.tmp
+
+# Ignore image assets (if not needed for version control)
+**/benchmarks/cli.png
+
+# Ignore other generated files and folders for Rust and C++
+target/
+deps/
+debug/
+release/
