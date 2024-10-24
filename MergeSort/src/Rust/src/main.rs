@@ -1,4 +1,3 @@
-// src/main.rs
 mod merge_sort;
 mod thread_merge_sort;
 
@@ -8,7 +7,7 @@ use rand::Rng;
 use std::time::Instant;
 
 fn main() {
-    // warning if your machine is having only 8 cores then it will takes lot of time or it might hang your machine so just reduce the array element size
+    // Warning if your machine is having only 8 cores; reduce the array element size accordingly to your machine
     const SIZE: usize = 100_000_000;
 
     let mut nums = vec![0; SIZE];
@@ -26,7 +25,7 @@ fn main() {
     let mergesort_duration = start.elapsed();
     println!("MergeSort algorithm time taken: {:.2} seconds", mergesort_duration.as_secs_f64());
 
-    let mut parallel_mergesort = ParallelMergeSort::new(&mut nums1);
+    let mut parallel_mergesort = ParallelMergeSort::new(nums1);
     let start = Instant::now();
     parallel_mergesort.sort();
     let parallel_mergesort_duration = start.elapsed();

@@ -1,11 +1,11 @@
 use std::thread;
 
-pub struct ParallelMergeSort<'a> {
-    nums: &'a mut Vec<i32>,
+pub struct ParallelMergeSort {
+    nums: Vec<i32>, // Changed to Vec<i32> to own the data
 }
 
-impl<'a> ParallelMergeSort<'a> {
-    pub fn new(nums: &'a mut Vec<i32>) -> Self {
+impl ParallelMergeSort {
+    pub fn new(nums: Vec<i32>) -> Self {
         Self { nums }
     }
 
@@ -16,58 +16,63 @@ impl<'a> ParallelMergeSort<'a> {
     fn recursive_sort(&mut self, left: usize, right: usize) {
         const THRESHOLD: usize = 10_000;
 
-        if right - left < THRESHOLD {
-            self.nums[left..=right].sort();
+        if right <= left {
             return;
         }
 
-        if left >= right {
+        if right - left < THRESHOLD {
+            self.nums[left..=right].sort(); // In-place sort
             return;
         }
 
         let mid = left + (right - left) / 2;
 
-        // Clone for parallel threads
-        let mut nums_clone_1 = self.nums.clone(); // Declare this as mutable
-        let mut nums_clone_2 = self.nums.clone(); // Declare this as mutable
+        // Split mutable references non-overlapping and create owned slices
+        let left_part = self.nums[left..=mid].to_vec();
+        let right_part = self.nums[mid + 1..=right].to_vec();
 
-        // Spawn the first thread for the left half
-        let thread_1 = thread::spawn(move || {
-            let mut sort = ParallelMergeSort::new(&mut nums_clone_1);
-            sort.recursive_sort(left, mid);
+        // Spawn threads for the left and right halves
+        let left_thread = thread::spawn(move || {
+            let mut left_sort = ParallelMergeSort::new(left_part);
+            left_sort.sort();
+            left_sort.nums // Return sorted vector
         });
 
-        // Spawn the second thread for the right half
-        let thread_2 = thread::spawn(move || {
-            let mut sort = ParallelMergeSort::new(&mut nums_clone_2);
-            sort.recursive_sort(mid + 1, right);
+        let right_thread = thread::spawn(move || {
+            let mut right_sort = ParallelMergeSort::new(right_part);
+            right_sort.sort();
+            right_sort.nums // Return sorted vector
         });
 
-        thread_1.join().unwrap();
-        thread_2.join().unwrap();
+        // Wait for both threads to finish and get the sorted results
+        let left_sorted = left_thread.join().unwrap();
+        let right_sorted = right_thread.join().unwrap();
 
+        // Merge the sorted halves back into the original vector
+        self.merge(left, right, left_sorted, right_sorted);
+    }
+
+    fn merge(&mut self, left: usize, _right: usize, left_sorted: Vec<i32>, right_sorted: Vec<i32>) {
         let mut result = Vec::new();
-        let mut i = left;
-        let mut j = mid + 1;
+        let (mut i, mut j) = (0, 0);
 
-        // Merge sorted halves
-        while i <= mid && j <= right {
-            if self.nums[i] <= self.nums[j] {
-                result.push(self.nums[i]);
+        while i < left_sorted.len() && j < right_sorted.len() {
+            if left_sorted[i] <= right_sorted[j] {
+                result.push(left_sorted[i]);
                 i += 1;
             } else {
-                result.push(self.nums[j]);
+                result.push(right_sorted[j]);
                 j += 1;
             }
         }
 
-        while i <= mid {
-            result.push(self.nums[i]);
+        while i < left_sorted.len() {
+            result.push(left_sorted[i]);
             i += 1;
         }
 
-        while j <= right {
-            result.push(self.nums[j]);
+        while j < right_sorted.len() {
+            result.push(right_sorted[j]);
             j += 1;
         }
 
