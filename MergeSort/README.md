@@ -79,3 +79,11 @@ g++ -o mergesort main.cpp src/mergeSort.cpp src/threadMergeSort.cpp -pthread
 cargo build --release
 cargo run --release
 ```
+
+## Warning
+
+**Before running the code, please be aware of the following requirements:**
+
+- This implementation of the MergeSort algorithm, especially the parallel version, is optimized for multi-core processors. If your machine has **less than 8 CPU cores** or **less than 8 GB of RAM**, you may experience significant slowdowns or the application may hang during execution.
+- For best performance and to avoid potential issues, it is recommended to run this code on a machine with **at least 8 CPU cores** and **8 GB of RAM**.
+- If you are running this on a lower-spec machine, consider reducing the array size (e.g., using a smaller constant for `SIZE`) to prevent excessive resource consumption.
