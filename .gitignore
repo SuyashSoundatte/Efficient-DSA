@@ -39,8 +39,6 @@ Thumbs.db
 *.log
 *.tmp
 
-# Ignore image assets (if not needed for version control)
-**/benchmarks/cli.png
 
 # Ignore other generated files and folders for Rust and C++
 target/
